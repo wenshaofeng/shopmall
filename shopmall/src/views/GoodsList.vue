@@ -50,12 +50,12 @@
                   <div class="pic">
                     <a href="#">
                       <!-- <img :src="'static/'+item.prodcutImg" alt> -->
-                      <img v-lazy="'static/'+item.prodcutImg" alt>
+                      <img v-lazy="'static/'+item.productImage" alt>
                     </a>
                   </div>
                   <div class="main">
                     <div class="name">{{item.productName}}</div>
-                    <div class="price">{{item.prodcutPrice}}</div>
+                    <div class="price">{{item.salePrice}}</div>
                     <div class="btn-area">
                       <a href="javascript:;" class="btn btn--m">加入购物车</a>
                     </div>
@@ -115,12 +115,12 @@ export default {
   },
   methods: {
     getGoodsList() {  //获取商品列表数据
-      axios.get("/api/goods").then(res => {
-        var data = res.data.data;
+      axios.get("/goods").then(res => {
+        var data = res.data
         console.log(data);
 
         if (data.status == 0) {
-          this.goodslist = data.result;
+          this.goodslist = data.result.list;
         }
       });
     },

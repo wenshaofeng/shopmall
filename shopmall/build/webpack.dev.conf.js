@@ -14,7 +14,7 @@ const express = require('express')
 const app = express() //请求server
 
 //  ** mock data 
-const appData = require('../mock/goods.json')  //加载本地JSON文件
+// const appData = require('../mock/goods.json')  //加载本地JSON文件
 
 
 const HOST = process.env.HOST
@@ -29,14 +29,14 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 
   // these devServer options should be customized in /config/index.js
   devServer: {
-
-    before (app) {
-      app.get('/api/goods',(req,res)=>{
-         res.json({
-           data : appData
-         })
-      })
-    },
+  //  mock数据
+    // before (app) {
+    //   app.get('/api/goods',(req,res)=>{
+    //      res.json({
+    //        data : appData
+    //      })
+    //   })
+    // },
 
     clientLogLevel: 'warning',
     historyApiFallback: {
