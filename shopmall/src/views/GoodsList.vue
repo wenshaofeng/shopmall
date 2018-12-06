@@ -11,7 +11,7 @@
         <div class="filter-nav">
           <span class="sortby">Sort by:</span>
           <a href="javascript:void(0)" class="default cur">Default</a>
-          <a href="javascript:void(0)" class="price">
+          <a href="javascript:void(0)" class="price" @click="sortPrice">
             Price
             <svg class="icon icon-arrow-short">
               <use xlink:href="#icon-arrow-short"></use>
@@ -61,7 +61,19 @@
                     </div>
                   </div>
                 </li>
+                <!-- 滚动加载插件 -->
+                
               </ul>
+              <div  class="view-more-normal"
+                          v-infinite-scroll="loadMore"
+                          infinite-scroll-disabled="busy"
+                          infinite-scroll-distance="30"
+                          infinite-scroll-throttle-delay='1000'
+                          >
+                      <!-- 加载中... -->
+                    
+                     <img v-show="loading" src="/static/loading-svg/loading-spinning-bubbles.svg" alt="">
+              </div>
             </div>
           </div>
         </div>
@@ -110,20 +122,56 @@ export default {
       ],
       priceChecked: "all", // 选中的价格区间
       filterBy: false, // 控制价格菜单面板的显示
-      overLayFlag: false // 遮罩的显示
+      overLayFlag: false, // 遮罩的显示
+      //分页和排序
+      sortFlag: true,
+      page: 1, 
+      pageSize: 8,
+
+      busy: true, //滚动加载插件（默认禁用）
+      loading: false
     };
   },
   methods: {
-    getGoodsList() {  //获取商品列表数据
-      axios.get("/goods").then(res => {
-        var data = res.data
-        console.log(data);
+    
+    getGoodsList(flag){
+            var param = {
+              page:this.page,
+              pageSize:this.pageSize,
+              sort:this.sortFlag ? 1 : -1   // sortFlag为true升序
+            }
+            this.loading = true
+            setTimeout(()=>{
+              axios.get("/goods",{
+              params:param    // 传参
+            }).then((res)=>{
+                this.loading=false 
+                var res = res.data;
+                if(res.status == "0"){
+                  if(flag){   // true.商品数据累加
+                    this.goodslist = this.goodslist.concat(res.result.list);
 
-        if (data.status == 0) {
-          this.goodslist = data.result.list;
-        }
-      });
-    },
+                    if(res.result.count == 0){  // 0条数据了，就不加载滚动加载方法了
+                      console.log('禁用了');
+                     
+                       
+                      this.busy = true; // 禁用
+                    }else{
+                      this.busy = false; // 启用
+                    }
+
+                  }else{  // 只加载一页
+                    this.goodslist = res.result.list;
+                    this.busy = false;
+                  }
+                }else{
+                  this.goodslist = [];
+                }
+            })
+            },1000)
+            
+        },
+
     showFilterPop(){     // 点击filterBy出现价格菜单和遮罩
             this.filterBy = true;
             this.overLayFlag = true;
@@ -137,9 +185,23 @@ export default {
             this.filterBy = false;
             this.overLayFlag = false;
     },
+    sortPrice(){  //根据价格排序
+          this.sortFlag = !this.sortFlag
+          this.page = 1   // 点击价格排序后从第一页开始
+          this.getGoodsList()
+    },
+    loadMore(){   // 滚动加载插件方法
+        this.busy = true; // 滚动就禁用，防止下一个滚动
+        setTimeout(() => {   // 一个滚动完成之后再滚动加载下一个
+            this.page++;
+            this.getGoodsList(true);  // 滚动加载是累加数据，并不是只显示一页数据，so需要传参去请求数据的地方判断一下
+        }, 500);
+    }
+
   },
   mounted() {
     this.getGoodsList();
   }
 };
 </script>
+

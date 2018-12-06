@@ -21,9 +21,22 @@ mongoose.connection.on("disconnected",function(){
 	console.log("MongoDB connected disconnected.")
 })
 
-//二级路由
+// 二级路由
+// 查询商品列表数据
+
 router.get('/',function(req,res,next){
-    goods.find({},function(err,doc) {
+    
+    //express获取请求参数  
+    let page = parseInt(req.param("page"));  //get请求数据拿到数据：res.param()
+    let pageSize = parseInt(req.param("pageSize"))  //limit需要传入number 
+    // let priceLevel = req.param("priceLevel");  // 传过来的价格区间
+    let sort = req.param("sort");
+    let skip = (page-1)*pageSize
+    let params = {}
+    let goodsModel = goods.find(params).skip(skip).limit(pageSize)
+    goodsModel.sort({'salePrice':sort}) //升序 1 降序 -1
+   
+    goodsModel.exec(function(err,doc) {
         if(err){
             //res.json表示输出一个json文件
             res.json({
@@ -42,4 +55,4 @@ router.get('/',function(req,res,next){
         }
     })
 })
- module.exports = router;
+module.exports = router;
