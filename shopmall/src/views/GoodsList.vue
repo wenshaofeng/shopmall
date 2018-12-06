@@ -11,9 +11,9 @@
         <div class="filter-nav">
           <span class="sortby">Sort by:</span>
           <a href="javascript:void(0)" class="default cur">Default</a>
-          <a href="javascript:void(0)" class="price" @click="sortPrice">
+          <a href="javascript:void(0)" class="price" @click="sortPrice()">
             Price
-            <svg class="icon icon-arrow-short">
+            <svg class="icon icon-arrow-short" v-bind:class="{'sort-up':sortFlag}"> 
               <use xlink:href="#icon-arrow-short"></use>
             </svg>
           </a>
@@ -60,10 +60,9 @@
                       <a href="javascript:;" class="btn btn--m">加入购物车</a>
                     </div>
                   </div>
-                </li>
-                <!-- 滚动加载插件 -->
-                
+                </li>          
               </ul>
+              <!-- 滚动加载插件 -->
               <div  class="view-more-normal"
                           v-infinite-scroll="loadMore"
                           infinite-scroll-disabled="busy"
@@ -129,7 +128,7 @@ export default {
       pageSize: 8,
 
       busy: true, //滚动加载插件（默认禁用）
-      loading: false
+      loading: false  // 往下滚动"加载图标"的出现效果
     };
   },
   methods: {
@@ -138,7 +137,8 @@ export default {
             var param = {
               page:this.page,
               pageSize:this.pageSize,
-              sort:this.sortFlag ? 1 : -1   // sortFlag为true升序
+              sort:this.sortFlag ? 1 : -1 ,  // sortFlag为true升序
+              priceLevel:this.priceChecked //点击的价格区间
             }
             this.loading = true
             setTimeout(()=>{
@@ -178,8 +178,9 @@ export default {
     },
     setPriceFilter(index){   // 点击价格
             this.priceChecked = index;
+            this.page = 1 //注意价格过滤重新从第一页开始获取
             this.closePop();
-            this.getGoodsList();
+            this.getGoodsList(); //发送请求
     },
     closePop(){    // 关闭价格菜单和遮罩
             this.filterBy = false;
