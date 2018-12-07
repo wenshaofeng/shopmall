@@ -22,9 +22,9 @@ mongoose.connection.on("disconnected", function () {
 })
 
 // 二级路由
-// 查询商品列表数据
 
-router.get('/', function (req, res, next) {
+// 查询商品列表数据
+router.get('/list', function (req, res, next) {
 
   //express获取请求参数  
   let page = parseInt(req.param("page")); //get请求数据拿到数据：res.param()
@@ -78,7 +78,7 @@ router.get('/', function (req, res, next) {
     } else {
       res.json({
         status: '0',
-        msg: '',
+        msg: '成功',
         result: {
           count: doc.length,
           list: doc
@@ -87,4 +87,88 @@ router.get('/', function (req, res, next) {
     }
   })
 })
+
+//加入购物车
+router.post('/addCart', function (req, res, next) {
+  var userId = '100000077',
+    productId = req.body.productId //post 请求
+  var User = require('../models/user.js') //引入user模型
+
+  //查询第一条，拿到用户信息
+  User.findOne({
+    userId: userId //查询条件
+  }, function (err, userdoc) {
+    if (err) {
+      res.json({
+        status: '1',
+        msg: err.message
+      })
+    } else {
+      console.log("userDoc:" + userdoc); //用户数据
+      if (userdoc) {
+        let goodsItem = ''
+        userdoc.cartList.forEach((item) => { //遍历用户购物车，判断加入购物车的商品是否已存在
+          if (item.productId == productId) {
+            goodsItem = item
+            item.productNum++
+          }
+        })
+        if (goodsItem) { //若购物车商品已存在
+          userdoc.save(function (err2, doc2) {
+            if (err2) {
+              res.json({
+                status: '1',
+                msg: err2.message
+              })
+            } else {
+              res.json({
+                status: '0',
+                msg: '',
+                result: 'suc'
+              })
+            }
+          })
+        } else { //若购物车商品不存在，就添加进去
+          // 从商品列表页Goods查询点击加入购物车的那件商品信息
+          goods.findOne({
+            productId: productId
+          }, function (err1, doc1) {
+            if (err1) {
+              res.json({
+                status: '1',
+                msg: err1.message
+              })
+            } else {
+              if (doc1) {
+                doc1.productNum = 1
+                doc1.checked = 1
+                userdoc.cartList.push(doc1) //添加信息到用户购物车列表中
+                userdoc.save(function (err2, doc2) { //保存数据到数据库
+                  if (err2) {
+                    res.json({
+                      status: '1',
+                      msg: err2.message
+                    })
+                  } else {
+                    res.json({
+                      status: "0",
+                      msg: '',
+                      result: 'suc'
+                    })
+                  }
+                })
+              }
+            }
+          })
+        }
+      }
+    }
+  })
+})
+
+/*  一：通过请求传过来的用户ID，查询数据库中有无用户信息
+ 二：通过用户信息文档，遍历购物车cartList判断购物车中是否已存在该商品信息
+     (1)存在，数量加一，不加入商品信息
+     (2)不存在，加入商品信息
+*/
 module.exports = router;
