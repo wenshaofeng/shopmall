@@ -10,13 +10,18 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {
+    proxyTable: { //代理插件，方便做转发
       '/goods':{
         target: 'http://localhost:3000',
         secure: false,
         changeOrigin: true 
       },
       '/goods/*':{
+        target: 'http://localhost:3000',
+        secure: false,
+        changeOrigin: true 
+      },
+      '/users/*':{  // users/路由的下一级路由
         target: 'http://localhost:3000',
         secure: false,
         changeOrigin: true 
