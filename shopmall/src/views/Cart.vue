@@ -43,7 +43,7 @@
                   </div>
                 </div>
                 <div class="cart-tab-2">
-                  <div class="item-price">{{item.salePrice}}</div>
+                  <div class="item-price">{{item.salePrice|currency('$')}}</div>
                 </div>
                 <div class="cart-tab-3">
                   <div class="item-quantity">
@@ -57,7 +57,7 @@
                   </div>
                 </div>
                 <div class="cart-tab-4">
-                  <div class="item-price-total">{{item.salePrice*item.productNum}}</div>
+                  <div class="item-price-total">{{item.salePrice*item.productNum|currency('$')}}</div>
                 </div>
                 <div class="cart-tab-5">
                   <div class="cart-item-opration">
@@ -76,8 +76,8 @@
           <div class="cart-foot-inner">
             <div class="cart-foot-l">
               <div class="item-all-check">
-                <a href="javascipt:;">
-                  <span class="checkbox-btn item-check-btn">
+                <a href="javascipt:;" @click="toggleCheck()">
+                  <span class="checkbox-btn item-check-btn" :class="{'check':checkAll}">
                     <svg class="icon icon-ok">
                       <use xlink:href="#icon-ok" /></svg>
                   </span>
@@ -87,7 +87,7 @@
             </div>
             <div class="cart-foot-r">
               <div class="item-total">
-                Item total: <span class="total-price">500</span>
+                Item total: <span class="total-price">{{total|currency('$')}}</span>
               </div>
               <div class="btn-wrap">
                 <a class="btn btn--red">Checkout</a>
@@ -165,6 +165,31 @@
       NavBread,
       Modal
     },
+    computed: {
+      total() { //总价格
+        var money = 0
+        if (this.cartList) {
+          this.cartList.forEach((item) => {
+            if (item.checked == '1') {
+              money += parseFloat(item.salePrice) * parseInt(item.productNum)
+            }
+          })
+        }
+        return money
+      },
+      checkAll() { //全选或全不选  遍历,如果有一个未被选上，全选就是空
+        var i = 0
+        if (this.cartList) {
+          this.cartList.forEach((item) => {
+            console.log(status);
+            if (item.checked == '0')
+              i++
+          })
+        }
+        return i == 0 ? true : false
+
+      }
+    },
     mounted: function () {
       this.init();
     },
@@ -193,7 +218,7 @@
           }
         })
       },
-      cartEdit(flag, item) { //flag 为标志位，判断是加还是减
+      cartEdit(flag, item) { //flag 为标志位，判断是加、减还是选中
         if (flag == 'add') {
           item.productNum++
         } else if (flag == 'sub') {
@@ -205,13 +230,26 @@
           item.checked = (item.checked == '1') ? '0' : '1'
         }
         axios.post('/users/cartEdit', {
-            productId : item.productId,
-            productNum :item.productNum,
-            checked : item.checked
-        }).then((response)=>{
-            let res = response.data
-
+          productId: item.productId,
+          productNum: item.productNum,
+          checked: item.checked
+        }).then((response) => {
+          let res = response.data
+        })
+      },
+      toggleCheck() {
+        var flag = !this.checkAll
+        this.cartList.forEach((item) => {
+          item.checked = flag ? '1' : '0'
+        })
+        axios.post('/users/editCheckAll', {
+          checkAll: flag
+        }).then((response) => {
+          let res = response.data
+          if (res.status == '0') {
+            console.log('update success');
             
+          }
         })
       }
 

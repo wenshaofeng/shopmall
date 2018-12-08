@@ -140,7 +140,6 @@ router.post('/cartDel', function (req, res, next) {
 })
 
 //购物车编辑商品
-
 router.post('/cartEdit', function (req, res, next) {
   var userId = req.cookies.userId,
     productId = req.body.productId,
@@ -149,13 +148,13 @@ router.post('/cartEdit', function (req, res, next) {
   User.update({ //查询条件
     'userId': userId,
     'cartList.productId': productId
-  }, {//修改的数据
+  }, { //修改的数据
     //如以下，由于cartList为数组结构，
     //所以cartList.$.productNum更新到具体某个位置的值，
     //而$为占位符，代表某一行数据下的productNum数据更新
-    "cartList.$.productNum": productNum, 
+    "cartList.$.productNum": productNum,
     "cartList.$.checked": checked
-  }, function (err, doc) {//回调
+  }, function (err, doc) { //回调
     if (err) {
       res.json({
         status: '1',
@@ -168,6 +167,45 @@ router.post('/cartEdit', function (req, res, next) {
         msg: '',
         result: 'suc'
       })
+    }
+  })
+})
+
+//全选和取消全选
+router.post('/editCheckAll', function (req, res, next) {
+  var userId = req.cookies.userId,
+    flag = req.body.checkAll ? '1' : '0'; //标志是全选还是全不选的状态
+  User.findOne({
+    userId: userId
+  }, function (err, user) {
+    if (err) {
+      res.json({
+        status: '1',
+        msg: err.message,
+        result: ''
+      });
+    } else {
+      if (user) {
+        user.cartList.forEach(element => {
+          element.checked = flag
+        });
+        user.save(function (err1, doc) {
+          if (err1) {
+            res.json({
+              status: '1',
+              msg: err1,
+              message,
+              result: ''
+            });
+          } else {
+            res.json({
+              status: '0',
+              msg: '',
+              result: 'suc'
+            });
+          }
+        })
+      }
     }
   })
 })

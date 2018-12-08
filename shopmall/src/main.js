@@ -6,8 +6,11 @@ import router from './router'
 import VueLazyLoad from 'vue-lazyload'
 import infiniteScroll from 'vue-infinite-scroll'
 
+import {currency} from './util/currency'
 
 Vue.config.productionTip = false
+
+Vue.filter("currency" , currency) //定义全局过滤器  currency.js传过来的本就是函数
 
 import 'assets/css/base.css'
 import 'assets/css/checkout.css'
