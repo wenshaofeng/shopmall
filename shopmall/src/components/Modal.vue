@@ -22,6 +22,7 @@
 
 <script type="text/ecmascript-6">
 export default {
+    name:"Modal",
     props:["mdShow"],   // 接收父组件传过来的mdShow
     data(){
         return {

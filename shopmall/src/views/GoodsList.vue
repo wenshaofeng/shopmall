@@ -91,9 +91,6 @@
         <router-link class="btn btn--m btn--red" href="javascript:;" to="/cart">查看我的购物车</router-link>
       </div>
     </Modal>
-
-
-    </Modal>
     <!-- 响应式布局价格弹出遮罩 -->
     <div class="md-overlay" v-show="overLayFlag" @click="closePop"></div>
     <!-- 底部 -->
