@@ -29,7 +29,7 @@
                 <div class="cart-tab-1">
                   <div class="cart-item-check">
                     <a href="javascipt:;" class="checkbox-btn item-check-btn" v-bind:class="{'check':item.checked=='1'}"
-                      @click="editCart('checked',item)">
+                      @click="cartEdit('checked',item)">
                       <svg class="icon icon-ok">
                         <use xlink:href="#icon-ok"></use>
                       </svg>
@@ -49,9 +49,9 @@
                   <div class="item-quantity">
                     <div class="select-self select-self-open">
                       <div class="select-self-area">
-                        <a class="input-sub">-</a>
+                        <a class="input-sub" @click="cartEdit('sub',item)">-</a>
                         <span class="select-ipt">{{item.productNum}}</span>
-                        <a class="input-add">+</a>
+                        <a class="input-add" @click="cartEdit('add',item)">+</a>
                       </div>
                     </div>
                   </div>
@@ -109,7 +109,7 @@
     </Modal>
     <!-- 底部组件 -->
     <nav-footer></nav-footer>
-    
+
     <!-- 图标 -->
     <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg"
       xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -151,7 +151,7 @@
   import axios from 'axios'
 
   export default {
-    name:'Cart',
+    name: 'Cart',
     data() {
       return {
         cartList: [], // 购物车商品列表
@@ -182,17 +182,39 @@
       closeModal() { //关闭模态框
         this.modalConfirm = false
       },
-      delCart(){// 确认删除,传给后端
-        axios.post('/users/cartDel',{
-          productId : this.delItem.productId
-        }).then((response)=>{
-          let res = response.data 
-          if(res.status == '0'){
-            this.modalConfirm=false 
+      delCart() { // 确认删除,传给后端
+        axios.post('/users/cartDel', {
+          productId: this.delItem.productId
+        }).then((response) => {
+          let res = response.data
+          if (res.status == '0') {
+            this.modalConfirm = false
             this.init() //重新初始化购物车列表
           }
         })
+      },
+      cartEdit(flag, item) { //flag 为标志位，判断是加还是减
+        if (flag == 'add') {
+          item.productNum++
+        } else if (flag == 'sub') {
+          if (item.productNum <= 1) {
+            return
+          }
+          item.productNum--
+        } else { //商品控制是否选中
+          item.checked = (item.checked == '1') ? '0' : '1'
+        }
+        axios.post('/users/cartEdit', {
+            productId : item.productId,
+            productNum :item.productNum,
+            checked : item.checked
+        }).then((response)=>{
+            let res = response.data
+
+            
+        })
       }
+
     }
   }
 
