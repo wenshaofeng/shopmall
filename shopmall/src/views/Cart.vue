@@ -90,7 +90,7 @@
                 Item total: <span class="total-price">{{total|currency('$')}}</span>
               </div>
               <div class="btn-wrap">
-                <a class="btn btn--red">Checkout</a>
+                <a class="btn btn--red" v-bind:class="{'btn--dis':checkedCount==0}" @click="checkOut">Checkout</a>
               </div>
             </div>
           </div>
@@ -98,7 +98,8 @@
       </div>
     </div>
     <!-- 模态框-是否删除 -->
-    <Modal :mdShow="modalConfirm" @close="closeModal">
+    <Modal :mdShow="
+    modalConfirm" @close="closeModal">
       <p slot="message">
         <span>确认要删除该商品吗？</span>
       </p>
@@ -187,8 +188,14 @@
           })
         }
         return i == 0 ? true : false
-
-      }
+      },
+      checkedCount() { // 获取已勾选的商品种数(几种商品已勾选)
+        var i = 0;
+        this.cartList.forEach((item) => {
+          if (item.checked == '1') i++;
+        });
+        return i;
+      },
     },
     mounted: function () {
       this.init();
@@ -237,7 +244,7 @@
           let res = response.data
         })
       },
-      toggleCheck() {
+      toggleCheck() { //全选/全不选
         var flag = !this.checkAll
         this.cartList.forEach((item) => {
           item.checked = flag ? '1' : '0'
@@ -248,9 +255,15 @@
           let res = response.data
           if (res.status == '0') {
             console.log('update success');
-            
           }
         })
+      },
+      checkOut() {
+        if (this.checkedCount > 0) {
+          this.$router.push({
+            path: '/address'
+          })
+        }
       }
 
     }
