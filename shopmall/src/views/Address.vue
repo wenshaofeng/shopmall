@@ -66,7 +66,7 @@
           <div class="addr-list-wrap">
             <div class="addr-list">
               <ul>
-                <li v-for="(item,index) in addressListFilter" :class="{'check':checkIndex == index}" @click="checkIndex=index">
+                <li v-for="(item,index) in addressListFilter" :class="{'check':checkIndex == index}" @click="checkIndex=index;selectedAddrId=item.addressId">
                   <dl>
                     <dt>{{item.userName}}</dt>
                     <dd class="address">{{item.streetName}}</dd>
@@ -131,7 +131,9 @@
           </div>
           <div class="next-btn-wrap">
             <!-- a标签跳转 -->
-            <router-link class="btn btn--m btn--red" v-bind:to="{path:'/orderConfirm'}">Next</router-link>
+            <router-link class="btn btn--m btn--red" v-bind:to="{path:'/orderConfirm',query:{'addressId':selectedAddrId}}">
+              Next
+            </router-link>
           </div>
         </div>
       </div>
@@ -164,16 +166,17 @@
     data() {
       return {
         addressList: [], //地址列表
-        limit:3 , //限制默认显示3个地址
-        checkIndex:0, //选中的地址索引 
-        isMdshow:false,//模态框显示
-        delItem:{}//要删除的地址对象
+        limit: 3, //限制默认显示3个地址
+        checkIndex: 0, //选中的地址索引 
+        isMdshow: false, //模态框显示
+        delItem: {}, //要删除的地址对象
+        selectedAddrId: '' //保存选中的地址Id，用于点击Next跳转
       }
     },
     computed: {
-        addressListFilter(){
-            return this.addressList.slice(0,this.limit)
-        }
+      addressListFilter() {
+        return this.addressList.slice(0, this.limit)
+      }
     },
     components: {
       NavHeader,
@@ -189,42 +192,46 @@
         axios.get('/users/addressList').then((response) => {
           let res = response.data
           this.addressList = res.result
+          this.addressList.forEach((item)=>{
+            if(item.isDefault==true)
+            this.selectedAddrId = item.addressId
+          })
         })
       },
-      expand(){
-          if(this.limit == 3) {
-              this.limit = this.addressList.length
-          }else{
-              this.limit = 3
-          }
+      expand() {  //展开\收缩地址栏
+        if (this.limit == 3) {
+          this.limit = this.addressList.length
+        } else {
+          this.limit = 3
+        }
       },
-      setDefault(addressId){ //设置默认地址
-        axios.post('/users/setDefault',{
-            addressId:addressId
-        }).then((response)=>{
-            let res = response.data 
-            if(res.status == '0'){
-                console.log('set default');
-                this.init()  //重新渲染地址列表
-            }
+      setDefault(addressId) { //设置默认地址
+        axios.post('/users/setDefault', {
+          addressId: addressId
+        }).then((response) => {
+          let res = response.data
+          if (res.status == '0') {
+            console.log('set default');
+            this.init() //重新渲染地址列表
+          }
         })
       },
       delAddressConfirm(item) { // 点击删除图标
         this.isMdshow = true //显示模态框
         this.delItem = item
       },
-      closeModal(){ //关闭模态框
-            this.isMdshow = false 
+      closeModal() { //关闭模态框
+        this.isMdshow = false
       },
-      delAddress(){ //删除地址信息,发送请求给后端
-          axios.post('/users/addressDel',{
-            addressId:this.delItem.addressId
-          }).then((response)=>{
-            let res = response.data 
-            if(res.status === '0'){
-              this.isMdshow = false
-              this.init()//重新初始化地址列表信息
-            }
+      delAddress() { //删除地址信息,发送请求给后端
+        axios.post('/users/addressDel', {
+          addressId: this.delItem.addressId
+        }).then((response) => {
+          let res = response.data
+          if (res.status === '0') {
+            this.isMdshow = false
+            this.init() //重新初始化地址列表信息
+          }
         })
       }
     }

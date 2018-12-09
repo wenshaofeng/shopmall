@@ -25,10 +25,10 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //登录拦截
-app.use(function (req, res, next) {//捕获登录状态，进入路由之前先进入function
+app.use(function (req, res, next) { //捕获登录状态，进入路由之前先进入function
   if (req.cookies.userId) { //如果用户已登录，不拦截
     next()
-  } else { 
+  } else {
     // console.log(req.originalUrl); //  '/goods/list?page=2&pageSize=8&sort=1&priceLevel=all'
     // console.log(req.path); // '/goods/list'
     if (req.originalUrl == '/users/login' || req.originalUrl == '/users/logout' || req.originalUrl.indexOf('/goods/list') > -1) {
