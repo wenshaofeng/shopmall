@@ -11,6 +11,7 @@ router.get('/', function (req, res, next) {
 
 
 //二级路由
+
 //登录接口
 router.post('/login', function (req, res, next) {
   var param = {
@@ -88,6 +89,8 @@ router.get('/checkLogin', function (req, res, next) {
   }
 })
 
+
+//------------- 购物车页  -------------------
 //查询当前用户的购物车数据
 router.get('/cartList', function (req, res, next) {
   var userId = req.cookies.userId
@@ -212,6 +215,8 @@ router.post('/editCheckAll', function (req, res, next) {
   })
 })
 
+
+//------------- 地址页 -------------------
 //查询用户地址接口
 router.get('/addressList', function (req, res, next) {
   var userId = req.cookies.userId
@@ -315,6 +320,7 @@ router.post('/addressDel', function (req, res, next) {
   })
 })
 
+//------------- 订单确认页 -------------------
 //创建订单功能
 router.post('/payMent', function (req, res, next) {
   // 前端需要传的参数：订单的地址id;订单最终的总金额
@@ -393,6 +399,7 @@ router.post('/payMent', function (req, res, next) {
   })
 })
 
+//------------- 订单成功页  -------------------
 //根据订单Id查询订单信息
 router.get('/orderDetail', function (req, res, next) {
   var userId = req.cookies.userId,
