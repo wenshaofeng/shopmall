@@ -134,7 +134,7 @@ router.post('/cartDel', function (req, res, next) {
         status: '0',
         msg: '',
         result: 'suc'
-      });
+      })
     }
   })
 })
@@ -227,6 +227,87 @@ router.get('/addressList', function (req, res, next) {
         status: '0',
         msg: '',
         result: doc.addressList
+      })
+    }
+  })
+})
+
+//设置默认地址接口
+/* 通过传来的addressId，去数据库中查找,找到addressList
+根据address遍历addressList设置isDefault
+设置完以后保存文档 */
+router.post('/setDefault', function (req, res, next) {
+  var userId = req.cookies.userId,
+    addressId = req.body.addressId;
+  if (!addressId) {
+    res.json({
+      status: '1003',
+      msg: 'addressId is null',
+      result: ''
+    })
+  } else {
+    User.findOne({
+      userId: userId
+    }, function (err, doc) {
+      if (err) {
+        res.json({
+          status: '1',
+          msg: err.message,
+          result: ''
+        })
+      } else {
+        var addressList = doc.addressList
+        addressList.forEach((item) => {
+          if (item.addressId === addressId) {
+            item.isDefault = true
+          } else {
+            item.isDefault = false
+          }
+        })
+        doc.save(function (err1, doc1) { //设置完以后保存文档
+          if (err) {
+            res.json({
+              status: '1',
+              msg: err.message,
+              result: ''
+            })
+          } else {
+            res.json({
+              status: '0',
+              msg: '',
+              result: ''
+            })
+          }
+        })
+      }
+    })
+  }
+})
+
+//删除地址信息
+router.post('/addressDel', function (req, res, next) {
+  var userId = req.cookies.userId,
+    addressId = req.body.addressId
+  User.update({
+    userId: userId
+  }, {
+    $pull: {
+      'addressList': {
+        'addressId': addressId
+      }
+    }
+  }, function (err, doc) {
+    if (err) {
+      res.json({
+        status: '1',
+        msg: err.message,
+        result: ""
+      })
+    } else {
+      res.json({
+        status: '0',
+        msg: '',
+        result: 'suc'
       })
     }
   })

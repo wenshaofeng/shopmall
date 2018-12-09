@@ -17,7 +17,7 @@ var userSchema = new Schema({
       "productNum": String // 商品数量
     }
   ],
-  "addressList": [{
+  "addressList": [{ //定义收获地址的数据类型
     "addressId": String,
     "userName": String,
     "streetName": String,

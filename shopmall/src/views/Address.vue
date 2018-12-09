@@ -73,17 +73,17 @@
                     <dd class="tel">{{item.tel}}</dd>
                   </dl>
                   <div class="addr-opration addr-del">
-                    <a href="javascript:;" class="addr-del-btn">
+                    <a href="javascript:;" class="addr-del-btn" @click="delAddressConfirm(item)">
                       <svg class="icon icon-del">
                         <use xlink:href="#icon-del"></use>
                       </svg>
                     </a>
                   </div>
                   <div class="addr-opration addr-set-default">
-                    <a href="javascript:;" class="addr-set-default-btn"><i>Set
+                    <a href="javascript:;" class="addr-set-default-btn" v-if="!item.isDefault" @click="setDefault(item.addressId)"><i>Set
                         default</i></a>
                   </div>
-                  <div class="addr-opration addr-default">Default address</div>
+                  <div class="addr-opration addr-default" v-if="item.isDefault">Default address</div>
                 </li>
                 <li class="addr-new">
                   <div class="add-new-inner">
@@ -136,6 +136,17 @@
         </div>
       </div>
     </div>
+    <!-- 模态框-是否删除 -->
+    <Modal :mdShow="
+    isMdshow" @close="closeModal">
+      <p slot="message">
+        <span>确认要删除该地址信息吗？</span>
+      </p>
+      <div slot="btnGroup">
+        <a href="javascript:;" class="btn btn--m" @click="delAddress()">确认</a>
+        <a href="javascript:;" class="btn btn--m" @click="isMdshow = false">取消</a>
+      </div>
+    </Modal>
     <!-- 底部组件 -->
     <nav-footer></nav-footer>
   </div>
@@ -154,7 +165,9 @@
       return {
         addressList: [], //地址列表
         limit:3 , //限制默认显示3个地址
-        checkIndex:0 //选中的地址索引 
+        checkIndex:0, //选中的地址索引 
+        isMdshow:false,//模态框显示
+        delItem:{}//要删除的地址对象
       }
     },
     computed: {
@@ -172,7 +185,7 @@
       this.init()
     },
     methods: {
-      init() {
+      init() { //初始化
         axios.get('/users/addressList').then((response) => {
           let res = response.data
           this.addressList = res.result
@@ -184,6 +197,35 @@
           }else{
               this.limit = 3
           }
+      },
+      setDefault(addressId){ //设置默认地址
+        axios.post('/users/setDefault',{
+            addressId:addressId
+        }).then((response)=>{
+            let res = response.data 
+            if(res.status == '0'){
+                console.log('set default');
+                this.init()  //重新渲染地址列表
+            }
+        })
+      },
+      delAddressConfirm(item) { // 点击删除图标
+        this.isMdshow = true //显示模态框
+        this.delItem = item
+      },
+      closeModal(){ //关闭模态框
+            this.isMdshow = false 
+      },
+      delAddress(){ //删除地址信息,发送请求给后端
+          axios.post('/users/addressDel',{
+            addressId:this.delItem.addressId
+          }).then((response)=>{
+            let res = response.data 
+            if(res.status === '0'){
+              this.isMdshow = false
+              this.init()//重新初始化地址列表信息
+            }
+        })
       }
     }
   }
