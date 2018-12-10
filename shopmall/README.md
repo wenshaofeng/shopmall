@@ -11,21 +11,10 @@
 ![](https://upload-images.jianshu.io/upload_images/9249356-539ba7b77d9547f2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 - `npm install` 下载依赖
-- `nodemon server/bin/www`   启动express后端服务
+- `nodemon server/bin/www`   启动express后端服务,连接数据库
 - `npm run dev` 启动项目
 ```
-# install dependencies
-npm install
 
-# serve with hot reload at localhost:8080
-npm run dev
-
-# build for production with minification
-npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
-```
 流程md文件
 - 01  GoodsList.vue-商品列表页
 - 02  搭建基于Express框架运行环境

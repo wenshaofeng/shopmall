@@ -21,7 +21,7 @@
             <a href="javascript:void(0)" class="navbar-link" @click="loginModalFlag=true" v-if="!nickName">Login</a>
             <a href="javascript:void(0)" class="navbar-link" @click="logOut" v-if="nickName">Logout</a>
             <div class="navbar-cart-container">
-              <span class="navbar-cart-count"></span>
+              <span class="navbar-cart-count">{{CartCount}}</span>
               <a class="navbar-link navbar-cart-link" href="/#/cart">
                 <svg class="navbar-cart-logo">
                   <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-cart"></use>
@@ -80,7 +80,15 @@
         userPwd: '',
         errorTip: false,
         loginModalFlag: false, // 登录框
-        nickName: '' // 用了vuex这个data数据就不用了
+        // nickName: '' // 用了vuex这个data数据就不用了
+      }
+    },
+    computed: {
+      nickName() {
+        return this.$store.state.nickName
+      },
+      CartCount() {
+        return this.$store.state.cartCount
       }
     },
     methods: {
@@ -94,31 +102,48 @@
           userName: this.userName,
           userPwd: this.userPwd
         }).then((response) => {
-          console.log('123456');
 
           let res = response.data
           if (res.status == '0') {
             this.errorTip = false
             this.loginModalFlag = false
-            this.nickName = res.result.userName
+            // this.nickName = res.result.userName
+            this.$store.commit("updateUserInfo", res.result.userName)
+            this.checkLogin()
           } else {
             this.errorTip = true
           }
+
         })
+
       },
       logOut() { //点击登出
         axios.post('/users/logout').then((response) => {
           let res = response.data
           if (res.status == '0') {
-            this.nickName = ''
+            // this.nickName = ''
+            this.$store.commit("updateUserInfo", "");
+            this.getCartCount() //查询购物车商品数量
           }
+
         })
+
       },
       checkLogin() { //登录校验
         axios.get('/users/checkLogin').then((response) => {
           let res = response.data
           if (res.status == '0') {
-            this.nickName = res.result
+            // this.nickName = res.result
+            this.$store.commit('updateUserInfo', res.result)
+          }
+          this.getCartCount() //查询购物车商品数量
+        })
+      },
+      getCartCount() { //查询购物车商品数量
+        axios.get('/users/getCartCount').then((response) => {
+          var res = response.data
+          if (res.status == '0') {
+            this.$store.commit('initCartCount', res.result)
           }
         })
       }
@@ -127,4 +152,5 @@
       this.checkLogin()
     },
   }
+
 </script>

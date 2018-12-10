@@ -215,6 +215,42 @@ router.post('/editCheckAll', function (req, res, next) {
   })
 })
 
+//查询购物车商品数量
+router.get('/getCartCount', function (req, res, next) {
+  if (req.cookies.userId) {
+    var userId = req.cookies.userId
+    User.findOne({
+      userId,
+      userId
+    }, function (err, doc) {
+      if (err) {
+        res.json({
+          status: '1',
+          msg: err.message,
+          result: ''
+        })
+      } else {
+        let cartList = doc.cartList
+        let cartCount = 0
+        cartList.map((item) => {
+          cartCount += parseInt(item.productNum)
+        })
+        res.json({
+          status: "0",
+          msg: "",
+          result: cartCount
+        });
+      }
+    })
+  } else {
+    res.json({
+      status: '0',
+      msg: '当前用户不存在！',
+      result: ''
+    })
+  }
+})
+
 
 //------------- 地址页 -------------------
 //查询用户地址接口
