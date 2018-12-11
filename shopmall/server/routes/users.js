@@ -220,7 +220,7 @@ router.get('/getCartCount', function (req, res, next) {
   if (req.cookies.userId) {
     var userId = req.cookies.userId
     User.findOne({
-      userId,
+      userId:
       userId
     }, function (err, doc) {
       if (err) {

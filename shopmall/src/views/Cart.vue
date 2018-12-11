@@ -11,7 +11,7 @@
     <div class="container">
       <div class="cart">
         <div class="page-title-normal">
-          <h2 class="page-title-h2"><span>My Cart</span></h2>
+          <h2 class="page-title-h2"><span>My Cart{{this.$store.state.nickName}}</span></h2>
         </div>
         <div class="item-list-wrap">
           <div class="cart-item">
@@ -157,7 +157,8 @@
       return {
         cartList: [], // 购物车商品列表
         modalConfirm: false, //模态框的显示
-        delItem: {} //要删除的商品对象
+        delItem: {} //要删除的商品对象 
+       
       }
     },
     components: {
@@ -182,7 +183,6 @@
         var i = 0
         if (this.cartList) {
           this.cartList.forEach((item) => {
-            console.log(status);
             if (item.checked == '0')
               i++
           })
@@ -191,11 +191,18 @@
       },
       checkedCount() { // 获取已勾选的商品种数(几种商品已勾选)
         var i = 0;
-        this.cartList.forEach((item) => {
-          if (item.checked == '1') i++;
-        });
+        if (this.cartList) {
+          this.cartList.forEach((item) => {
+            if (item.checked == '1') i++;
+          });
+        }
         return i;
       },
+      nickName(){
+         if(this.$store.state.nickName == ''){
+           this.init()
+         }
+      }
     },
     mounted: function () {
       this.init();
@@ -222,6 +229,7 @@
           if (res.status == '0') {
             this.modalConfirm = false
             this.init() //重新初始化购物车列表
+            this.$store.commit('updateCartCount', -(this.delItem.productNum))
           }
         })
       },
@@ -242,6 +250,13 @@
           checked: item.checked
         }).then((response) => {
           let res = response.data
+          let num
+          if (flag == 'add') {
+            num = 1
+          } else if (flag == 'sub') {
+            num = -1
+          }
+          this.$store.commit('updateCartCount', num)
         })
       },
       toggleCheck() { //全选/全不选
@@ -258,14 +273,13 @@
           }
         })
       },
-      checkOut() {
+      checkOut() { //路由导航至地址页
         if (this.checkedCount > 0) {
           this.$router.push({
             path: '/address'
           })
         }
       }
-
     }
   }
 

@@ -21,7 +21,7 @@
             <a href="javascript:void(0)" class="navbar-link" @click="loginModalFlag=true" v-if="!nickName">Login</a>
             <a href="javascript:void(0)" class="navbar-link" @click="logOut" v-if="nickName">Logout</a>
             <div class="navbar-cart-container">
-              <span class="navbar-cart-count">{{CartCount}}</span>
+              <span class="navbar-cart-count">{{cartCount}}</span>
               <a class="navbar-link navbar-cart-link" href="/#/cart">
                 <svg class="navbar-cart-logo">
                   <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-cart"></use>
@@ -68,6 +68,7 @@
 </template>
 
 <script>
+  import{ mapState } from 'vuex'
   import './../assets/css/login.css'
   import axios from 'axios'
   export default {
@@ -84,12 +85,15 @@
       }
     },
     computed: {
-      nickName() {
+      //mapState辅助函数
+      ...mapState(['nickName','cartCount']) //  ...是ES6语法
+      
+     /*  nickName() {
         return this.$store.state.nickName
       },
       CartCount() {
         return this.$store.state.cartCount
-      }
+      } */
     },
     methods: {
       login() { //点击登录
@@ -122,7 +126,7 @@
           let res = response.data
           if (res.status == '0') {
             // this.nickName = ''
-            this.$store.commit("updateUserInfo", "");
+            this.$store.commit("updateUserInfo", "");   
             this.getCartCount() //查询购物车商品数量
           }
 
@@ -134,7 +138,7 @@
           let res = response.data
           if (res.status == '0') {
             // this.nickName = res.result
-            this.$store.commit('updateUserInfo', res.result)
+            this.$store.commit('updateUserInfo', res.result)      
           }
           this.getCartCount() //查询购物车商品数量
         })
@@ -142,8 +146,10 @@
       getCartCount() { //查询购物车商品数量
         axios.get('/users/getCartCount').then((response) => {
           var res = response.data
-          if (res.status == '0') {
+          if (res.status == '0') { //登录后
             this.$store.commit('initCartCount', res.result)
+          }else if(res.status == '10001'){ //登出
+             this.$store.commit('initCartCount', res.result)
           }
         })
       }

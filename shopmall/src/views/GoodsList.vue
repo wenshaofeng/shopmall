@@ -236,6 +236,7 @@
           if (res.status == 0) {
             // alert('加入成功')
             this.mdShowCart = true; // 加入购物车成功，成功的模态框显示
+            this.$store.commit('updateCartCount',1)
           } else {
             // alert("msg:"+res.msg)
             this.mdShow = true // 未登录模态框显示
