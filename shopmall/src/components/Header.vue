@@ -17,7 +17,7 @@
         <div class="navbar-right-container" style="display: flex;">
           <div class="navbar-menu-container">
             <!--<a href="/" class="navbar-link">我的账户</a>-->
-            <span class="navbar-link" v-text="nickName" v-if="nickName"></span>
+            <span class="navbar-link" v-text="nickName" v-if="nickName" ></span>
             <a href="javascript:void(0)" class="navbar-link" @click="loginModalFlag=true" v-if="!nickName">Login</a>
             <a href="javascript:void(0)" class="navbar-link" @click="logOut" v-if="nickName">Logout</a>
             <div class="navbar-cart-container">
@@ -127,6 +127,7 @@
           if (res.status == '0') {
             // this.nickName = ''
             this.$store.commit("updateUserInfo", "");   
+            this.checkLogin()
             this.getCartCount() //查询购物车商品数量
           }
 
@@ -141,6 +142,7 @@
             this.$store.commit('updateUserInfo', res.result)      
           }
           this.getCartCount() //查询购物车商品数量
+          this.$emit('change')
         })
       },
       getCartCount() { //查询购物车商品数量
@@ -148,11 +150,14 @@
           var res = response.data
           if (res.status == '0') { //登录后
             this.$store.commit('initCartCount', res.result)
+            //非父子组件传值
           }else if(res.status == '10001'){ //登出
+            //非父子组件传值
              this.$store.commit('initCartCount', res.result)
           }
         })
       }
+      
     },
     mounted() {
       this.checkLogin()

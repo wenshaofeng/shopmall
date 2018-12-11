@@ -2,7 +2,7 @@
 <template>
   <div>
     <!-- 头部组件 -->
-    <nav-header></nav-header>
+    <nav-header @change='changeLogin()'></nav-header>
     <!-- 面包屑组件 -->
     <nav-bread>
       <span>My Cart</span>
@@ -25,7 +25,7 @@
               </ul>
             </div>
             <ul class="cart-item-list">
-              <li v-for="item in cartList">
+              <li v-for="item in cartList" >
                 <div class="cart-tab-1">
                   <div class="cart-item-check">
                     <a href="javascipt:;" class="checkbox-btn item-check-btn" v-bind:class="{'check':item.checked=='1'}"
@@ -87,7 +87,7 @@
             </div>
             <div class="cart-foot-r">
               <div class="item-total">
-                Item total: <span class="total-price">{{total|currency('$')}}</span>
+                Item total: <span class="total-price" >{{total|currency('$')}}</span>
               </div>
               <div class="btn-wrap">
                 <a class="btn btn--red" v-bind:class="{'btn--dis':checkedCount==0}" @click="checkOut">Checkout</a>
@@ -157,8 +157,7 @@
       return {
         cartList: [], // 购物车商品列表
         modalConfirm: false, //模态框的显示
-        delItem: {} //要删除的商品对象 
-       
+        delItem: {} ,//要删除的商品对象 
       }
     },
     components: {
@@ -199,9 +198,7 @@
         return i;
       },
       nickName(){
-         if(this.$store.state.nickName == ''){
-           this.init()
-         }
+         return this.$store.state.nickName
       }
     },
     mounted: function () {
@@ -279,6 +276,10 @@
             path: '/address'
           })
         }
+      },
+      changeLogin(){
+        this.init()
+        
       }
     }
   }

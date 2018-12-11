@@ -2,7 +2,7 @@
 <template>
   <div>
     <!-- 头部组件 -->
-    <nav-header></nav-header>
+    <nav-header @change='changeLogin()'></nav-header>
     <!-- 面包屑组件 -->
     <nav-bread>
       <span>Order Confirm</span>
@@ -196,6 +196,9 @@
                 })
             }   
         })
+      },
+      changeLogin(){
+        this.init()
       }
     }
   }
