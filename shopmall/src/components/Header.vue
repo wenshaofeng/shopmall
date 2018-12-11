@@ -150,9 +150,7 @@
           var res = response.data
           if (res.status == '0') { //登录后
             this.$store.commit('initCartCount', res.result)
-            //非父子组件传值
-          }else if(res.status == '10001'){ //登出
-            //非父子组件传值
+          }else if(res.status == '10001'){ //登出 
              this.$store.commit('initCartCount', res.result)
           }
         })
