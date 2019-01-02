@@ -1,0 +1,14 @@
+{
+  "name": "vue-toast-demo",
+  "version": "1.0.0",
+  "description": "a vue plugin",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "toast"
+  ],
+  "author": "kobe",
+  "license": "ISC"
+}
